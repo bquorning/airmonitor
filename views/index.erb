@@ -18,8 +18,8 @@
   <span style="display: inline-block; width: 50px;"></span>
   <select id="projects" name="projects">Project
     <option value="0">-- Select Project --</option>
-    <% for @project in projects %>
-      <option value="<%= @project['id'] %>"><%= @project['name'] %></option>
+    <% projects.each do |project| %>
+      <option value="<%= project['id'] %>" <%= "selected" if project['id'] == project_id %>><%= project['name'] %></option>
     <% end %>
   </select><span id="status">-</span><br><br>
 </div>
@@ -59,12 +59,15 @@
     });
     $('.env_selector').on('change', function() { $exception_table.fnDraw(); });
 
-    $project_select.on('change', function() {
+    $project_select.on('change', set_project);
+
+    function set_project() {
       $update_status.text("-");
       project_id = $project_select.val();
       if (project_id == "0") { project_id = undefined; return; }
+      window.history.pushState({}, "Project "+project_id, "/project/"+project_id);
       projects[project_id] = projects[project_id] || {last_update: 0, waiting: false, errors: {}};
-    });
+    };
 
     function escape_html(unsafe) {
       return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
@@ -134,5 +137,7 @@
         var now = (new Date()).toISOString().replace("T", " ").replace(/\:\d+\.\d+Z/, " UTC");
         if (now != $time_now.text()) $time_now.text(now);
       }, 100);
+
+    set_project();
   });
 </script>

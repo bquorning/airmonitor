@@ -41,7 +41,11 @@ get '/auth/failure' do
 end
 
 get '/' do
-  erb :index, :locals => {:projects => projects, :account => project_settings[session[:authorized_domain]][0]}
+  erb :index, :locals => {:projects => projects, :account => project_settings[session[:authorized_domain]][0], :project_id => nil}
+end
+
+get '/project/:project_id' do
+  erb :index, :locals => {:projects => projects, :account => project_settings[session[:authorized_domain]][0], :project_id => params[:project_id]}
 end
 
 get '/errors/:project.json' do
