@@ -32,12 +32,12 @@
     var account = '<%= account %>',
       project_id,
       projects = {},
-      project_select = $('#projects'),
-      exception_table = $('#exception_table'),
-      update_status = $('#status'),
-      time_now = $('#time_now');
+      $project_select = $('#projects'),
+      $exception_table = $('#exception_table'),
+      $update_status = $('#status'),
+      $time_now = $('#time_now');
 
-    exception_table.dataTable({
+    $exception_table.dataTable({
       "aoColumns":[
         {"sTitle":"","sClass":"error-details","bSortable":false},
         {"sTitle":"Frequency","sClass":"error-frequency","asSorting":["desc","asc"]},
@@ -57,11 +57,11 @@
       }
       return true;
     });
-    $('.env_selector').on('change', function() { exception_table.fnDraw(); });
+    $('.env_selector').on('change', function() { $exception_table.fnDraw(); });
 
-    project_select.on('change', function() {
-      update_status.text("-");
-      project_id = project_select.val();
+    $project_select.on('change', function() {
+      $update_status.text("-");
+      project_id = $project_select.val();
       if (project_id == "0") { project_id = undefined; return; }
       projects[project_id] = projects[project_id] || {last_update: 0, waiting: false, errors: {}};
     });
@@ -86,15 +86,15 @@
       var tr = $(this).parents('tr');
       var group = tr.find('input[name="group"]').val();
       tr = tr[0];
-      if (exception_table.fnIsOpen(tr))
+      if ($exception_table.fnIsOpen(tr))
       {
         this.innerHTML = "\u25B6";
-        exception_table.fnClose(tr);
+        $exception_table.fnClose(tr);
       }
       else
       {
         this.innerHTML = "\u25BC";
-        exception_table.fnOpen(tr, add_details(exception_table, group));
+        $exception_table.fnOpen(tr, add_details($exception_table, group));
       }
     });
 
@@ -106,25 +106,25 @@
       if (elapsed < 30 || (project.waiting && (elapsed < 300 || !project.last_update))) return;
 
       project.waiting = true;
-      update_status.text("Fetching updates...");
+      $update_status.text("Fetching updates...");
 
       $.ajax({
         dataType: "json", url: "/errors/"+project_id+".json"
       }).done(function(data){
-        exception_table.fnClearTable();
+        $exception_table.fnClearTable();
         project.errors = data;
         for (var i in project.errors) {
           var e = project.errors[i];
           var details = '<span class="details">\u25B6</span><input type="hidden" name="group" value="'+e.id+'">';
           var message = '<a href="https://'+account+'.airbrake.io/projects/'+project_id+'/groups/'+e.id+'/notices/'+e.notices[0].uuid+'" target="_blank">'+escape_html(e.error_message)+'</a>';
           var env = (e.rails_env == "production" ? "P" : (e.rails_env == "staging" ? "S" : (e.rails_env == "master" ? "M" : e.rails_env)));
-          exception_table.fnAddData([ details, e.frequency.toFixed(2), e.created_at, e.most_recent_notice_at, e.notices_count, env , message]);
+          $exception_table.fnAddData([ details, e.frequency.toFixed(2), e.created_at, e.most_recent_notice_at, e.notices_count, env , message]);
         }
       }).always(function(data){
-        update_status.text("-");
+        $update_status.text("-");
         project.waiting = false;
         project.last_update = now;
-        //exception_table.fnDraw();
+        //$exception_table.fnDraw();
       });
     };
 
@@ -132,7 +132,7 @@
 
     setInterval(function(){
         var now = (new Date()).toISOString().replace("T", " ").replace(/\:\d+\.\d+Z/, " UTC");
-        if (now != time_now.text()) time_now.text(now);
+        if (now != $time_now.text()) $time_now.text(now);
       }, 100);
   });
 </script>
