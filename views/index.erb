@@ -8,6 +8,33 @@
   .error-message { }
   .notice-at { white-space: nowrap; }
   #time_now { display: inline-block; width: 250px; }
+
+  @-webkit-keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  @-moz-keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  @-o-keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  @keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  #status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    -webkit-animation: rotate 1s infinite linear; /* Safari 4+ */
+    -moz-animation:    rotate 1s infinite linear; /* Fx 5+ */
+    -o-animation:      rotate 1s infinite linear; /* Opera 12+ */
+    animation:         rotate 1s infinite linear; /* IE 10+, Fx 29+ */
+  }
 </style>
 
 <div>
@@ -22,7 +49,7 @@
       <option value="<%= project['id'] %>" <%= "selected" if project['id'] == project_id %>><%= project['name'] %></option>
     <% end %>
   </select>
-  <span id="status">Fetching updates...</span>
+  <div id="status">&#x21BB;</div>
 </div>
 <div>
   <table id="exception_table" cellpadding="0" cellspacing="0" border="0"></table>
