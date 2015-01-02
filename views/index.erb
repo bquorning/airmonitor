@@ -21,7 +21,8 @@
     <% projects.each do |project| %>
       <option value="<%= project['id'] %>" <%= "selected" if project['id'] == project_id %>><%= project['name'] %></option>
     <% end %>
-  </select><span id="status">-</span><br><br>
+  </select>
+  <span id="status">Fetching updates...</span>
 </div>
 <div>
   <table id="exception_table" cellpadding="0" cellspacing="0" border="0"></table>
@@ -62,7 +63,7 @@
     $project_select.on('change', set_project);
 
     function set_project() {
-      $update_status.text("-");
+      $update_status.hide();
       project_id = $project_select.val();
       if (project_id == "0") { project_id = undefined; return; }
       window.history.pushState({}, "Project "+project_id, "/project/"+project_id);
@@ -109,7 +110,7 @@
       if (elapsed < 30 || (project.waiting && (elapsed < 300 || !project.last_update))) return;
 
       project.waiting = true;
-      $update_status.text("Fetching updates...");
+      $update_status.show();
 
       $.ajax({
         dataType: "json", url: "/errors/"+project_id+".json"
@@ -124,7 +125,7 @@
           $exception_table.fnAddData([ details, e.frequency.toFixed(2), e.created_at, e.most_recent_notice_at, e.notices_count, env , message]);
         }
       }).always(function(data){
-        $update_status.text("-");
+        $update_status.hide();
         project.waiting = false;
         project.last_update = now;
         //$exception_table.fnDraw();
